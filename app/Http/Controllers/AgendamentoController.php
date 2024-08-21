@@ -46,9 +46,11 @@ class AgendamentoController extends Controller
                 ->with('error', 'Erro ao buscar agendamentos. Tente novamente.');
         }
     }
+
     public function index()
     {
         try {
+            // Busca todos os agendamentos
             $agendamentos = Agendamento::with('cliente')->get();
             return view('agendamentos.index', compact('agendamentos'));
         } catch (\Exception $e) {
@@ -57,6 +59,7 @@ class AgendamentoController extends Controller
                 ->with('error', 'Ocorreu um erro ao carregar os agendamentos. Por favor, tente novamente.');
         }
     }
+
 
     public function create($clienteId)
     {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AgendamentoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\AuthController;
 
 
 /*
@@ -42,5 +43,10 @@ Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'destroy'])->
 Route::get('/agendamentos/buscar-cpf', [AgendamentoController::class, 'searchCpf'])->name('agendamentos.searchCpf');
 Route::post('/agendamentos/verificar-cpf', [AgendamentoController::class, 'verifyCpf'])->name('agendamentos.verifyCpf');
 
+
+Route::get('/register',[AuthController::class,'registerForm'])->name('auth.register');
+Route::post('/register/process',[AuthController::class,'processRegister'])->name('auth.processRegister');
+Route::get('/login',[AuthController::class,'loginForm'])->name('auth.login');
+Route::post('/login/process',[AuthController::class,'processLogin'])->name('auth.processLogin');
 
 
