@@ -105,16 +105,17 @@ class AuthController extends Controller
                     'created_at' => now(),
                 ]);
 
+
                 Mail::to($email)->send(new ResetPasswordMail($token, $email));
 
-                return redirect()->back()->with('success', 'Um e-mail de redefinição de senha foi enviado. Verifique sua caixa de entrada.');
+                return redirect()->route('auth.reset.form', ['token' => $token, 'email' => $email])
+                    ->with('success', 'Um e-mail de redefinição de senha foi enviado. Verifique sua caixa de entrada.');
             } else {
                 return redirect()->back()->with('error', 'Nenhuma conta foi encontrada com este e-mail.');
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-
             Log::error('Erro ao processar solicitação de redefinição de senha: ', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -125,6 +126,7 @@ class AuthController extends Controller
             return redirect()->back()->with('error', 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.');
         }
     }
+
 
     public function showResetForm($token, $email)
     {

@@ -51,7 +51,7 @@ Route::post('/login/process',[AuthController::class,'processLogin'])->name('auth
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/forgot',[AuthController::class,'forgotForm'])->name('auth.forgot');
 Route::post('/forgot/process',[AuthController::class,'forgotProcess'])->name('auth.forgotProcess');
-Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showResetForm'])->name('password.reset.form');
+Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showResetForm'])->name('auth.reset.form');
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('auth.reset.password');
 
 
