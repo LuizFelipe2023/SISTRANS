@@ -130,4 +130,6 @@ class ClienteController extends Controller
                 ->with('error', 'Erro ao excluir o cliente. Por favor, tente novamente.');
         }
     }
+
+
 }

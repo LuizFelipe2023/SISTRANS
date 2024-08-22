@@ -50,12 +50,22 @@ class AgendamentoController extends Controller
     public function index()
     {
         try {
-            // Busca todos os agendamentos
             $agendamentos = Agendamento::with('cliente')->get();
             return view('agendamentos.index', compact('agendamentos'));
         } catch (\Exception $e) {
             Log::error('Erro ao carregar agendamentos: ' . $e->getMessage());
             return redirect()->route('agendamentos.index')
+                ->with('error', 'Ocorreu um erro ao carregar os agendamentos. Por favor, tente novamente.');
+        }
+    }
+    public function index2()
+    {
+        try {
+            $agendamentos = Agendamento::all();
+            return view('agendamentos.index2', compact('agendamentos'));
+        } catch (\Exception $e) {
+            Log::error('Erro ao carregar agendamentos: ' . $e->getMessage());
+            return redirect()->route('agendamentos.index2')
                 ->with('error', 'Ocorreu um erro ao carregar os agendamentos. Por favor, tente novamente.');
         }
     }
