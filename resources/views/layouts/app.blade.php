@@ -25,6 +25,7 @@
                 <ul class="nav list-unstyled d-flex gap-3 mb-0">
                     <li><a href="{{route('agendamentos.searchCpf')}}" class="nav-link text-dark fw-semibold">Meus Agendamentos</a></li>
                     <li><a href="{{ route('agendamentos.search') }}" class="nav-link text-dark fw-semibold">Criar Agendamento</a></li>
+                    <li><a href="{{ route('auth.login') }}" class="nav-link text-dark fw-semibold">Login</a></li>
                 </ul>
             </nav>
         </div>
