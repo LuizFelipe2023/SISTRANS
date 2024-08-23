@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-md-8 col-lg-6">
+    <div class="container-fluid pt-5">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-6 col-lg-4">
                 <div class="card shadow-lg border-light rounded">
                     <div class="card-header text-center">
-                        <h4 class="mb-0">Redefinir Senha</h4>
+                        <h4>Verificação de Token</h4>
                     </div>
                     <div class="card-body">
                         @if (session('success'))
@@ -21,28 +21,22 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('auth.reset.password') }}" method="POST">
+                        <form action="{{ route('auth.token.process') }}" method="POST">
                             @csrf
 
-                            <input type="hidden" name="token" value="{{ $token }}">
-                            <input type="hidden" name="email" value="{{ $email }}">
-
-                            <div class="form-group mb-3">
-                                <label for="password" class="form-label">Nova Senha:</label>
-                                <input type="password" name="password" id="password" class="form-control form-control-lg @error('password') is-invalid @enderror" required>
-                                @error('password')
+                            <div class="mb-3">
+                                <label for="token" class="form-label">Token</label>
+                                <input type="text" name="token" class="form-control @error('token') is-invalid @enderror" id="token" placeholder="Insira o token" required>
+                                @error('token')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
                                 @enderror
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="password_confirmation" class="form-label">Confirmar Senha:</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control form-control-lg" required>
-                            </div>
+                            <input type="hidden" name="email" value="{{ $email }}">
 
-                            <button type="submit" class="btn btn-primary btn-md w-100 rounded shadow">Redefinir Senha</button>
+                            <button type="submit" class="btn btn-primary w-100">Verificar Token</button>
                         </form>
                     </div>
                 </div>

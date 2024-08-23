@@ -44,14 +44,17 @@ Route::get('/', [AgendamentoController::class, 'searchCpf'])->name('agendamentos
 Route::post('/agendamentos/verificar-cpf', [AgendamentoController::class, 'verifyCpf'])->name('agendamentos.verifyCpf');
 
 
-Route::get('/register',[AuthController::class,'registrationForm'])->name('auth.register');
-Route::post('/register/process',[AuthController::class,'processRegister'])->name('auth.processRegister');
-Route::get('/login',[AuthController::class,'loginForm'])->name('auth.login');
-Route::post('/login/process',[AuthController::class,'processLogin'])->name('auth.processLogin');
+Route::get('/register', [AuthController::class, 'registrationForm'])->name('auth.register');
+Route::post('/register', [AuthController::class, 'processRegister'])->name('auth.processRegister');
+Route::get('/login', [AuthController::class, 'loginForm'])->name('auth.login');
+Route::post('/login', [AuthController::class, 'processLogin'])->name('auth.processLogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-Route::get('/forgot',[AuthController::class,'forgotForm'])->name('auth.forgot');
-Route::post('/forgot/process',[AuthController::class,'forgotProcess'])->name('auth.forgotProcess');
+Route::get('/forgot', [AuthController::class, 'forgotForm'])->name('auth.forgot');
+Route::post('/forgot', [AuthController::class, 'forgotProcess'])->name('auth.forgotProcess');
+Route::get('/token/{email}', [AuthController::class, 'showTokenForm'])->name('auth.token.form');
+Route::post('/token', [AuthController::class, 'tokenProcess'])->name('auth.token.process');
 Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showResetForm'])->name('auth.reset.form');
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('auth.reset.password');
+
 
 

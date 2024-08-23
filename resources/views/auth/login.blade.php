@@ -38,6 +38,12 @@
                                     </div>
                                 @endif
                             </form>
+
+                            <div class="text-center mt-3">
+                                <a href="{{ route('auth.register') }}" class="btn btn-link">Não tem uma conta? Registre-se</a>
+                                <br>
+                                <a href="{{ route('auth.forgot') }}" class="btn btn-link">Esqueceu a senha?</a>
+                            </div>
                         </div>
                     </div>
                 </div>

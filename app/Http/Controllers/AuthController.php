@@ -8,12 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
-
 
 class AuthController extends Controller
 {
@@ -79,12 +77,10 @@ class AuthController extends Controller
         }
     }
 
-
     public function forgotForm()
     {
         return view('auth.forgot');
     }
-
 
     public function forgotProcess(Request $request)
     {
@@ -105,10 +101,9 @@ class AuthController extends Controller
                     'created_at' => now(),
                 ]);
 
-
                 Mail::to($email)->send(new ResetPasswordMail($token, $email));
 
-                return redirect()->route('auth.reset.form', ['token' => $token, 'email' => $email])
+                return redirect()->route('auth.token.form', ['email' => $email])
                     ->with('success', 'Um e-mail de redefinição de senha foi enviado. Verifique sua caixa de entrada.');
             } else {
                 return redirect()->back()->with('error', 'Nenhuma conta foi encontrada com este e-mail.');
@@ -127,6 +122,45 @@ class AuthController extends Controller
         }
     }
 
+    public function showTokenForm($email)
+    {
+        return view('auth.token', ['email' => $email]);
+    }
+
+    public function tokenProcess(Request $request)
+    {
+        try {
+            $request->validate([
+                'token' => 'required',
+                'email' => 'required|email'
+            ]);
+
+            $token = $request->input('token');
+            $email = $request->input('email');
+
+            $passwordReset = DB::table('password_resets')
+                ->where('email', $email)
+                ->where('token', $token)
+                ->first();
+
+            if ($passwordReset) {
+                return redirect()->route('auth.reset.form', ['token' => $token, 'email' => $email]);
+            } else {
+                return redirect()->back()->with('error', 'Token inválido ou expirado.');
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('Erro ao validar token de redefinição de senha: ', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.');
+        }
+    }
 
     public function showResetForm($token, $email)
     {
@@ -145,7 +179,6 @@ class AuthController extends Controller
                 'password' => 'required|confirmed|min:6',
             ]);
 
-
             $reset = DB::table('password_resets')
                 ->where('email', $request->email)
                 ->where('token', $request->token)
@@ -155,17 +188,14 @@ class AuthController extends Controller
                 return redirect()->back()->with('error', 'O token de redefinição de senha é inválido ou expirado.');
             }
 
-
             $user = User::where('email', $request->email)->first();
 
             if (!$user) {
                 return redirect()->back()->with('error', 'Nenhum usuário encontrado com este e-mail.');
             }
 
-
             $user->password = Hash::make($request->password);
             $user->save();
-
 
             DB::table('password_resets')->where('email', $request->email)->delete();
 
