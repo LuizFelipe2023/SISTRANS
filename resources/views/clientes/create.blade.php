@@ -16,7 +16,7 @@
                         {{ session('error') }}
                     </div>
                 @endif
-                <form action="{{ route('clientes.store') }}" method="POST">
+                <form action="{{ route('clientes.store') }}" method="POST" enctype="multipart/form-data" >
                     @csrf
 
                     <div class="form-group mb-4">
@@ -67,6 +67,16 @@
                                 value="{{ old('data_nascimento') }}" required>
                         </div>
                         @error('data_nascimento')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="foto_perfil" class="form-label">Foto de Perfil</label>
+                        <div class="input-group">
+                            <input type="file" name="foto_perfil" id="foto_perfil" class="form-control">
+                        </div>
+                        @error('foto_perfil')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>

@@ -16,15 +16,14 @@
                         {{ session('error') }}
                     </div>
                 @endif
-                <form action="{{ route('clientes.update', ['id' => $cliente->id]) }}" method="POST">
+
+                <form action="{{ route('clientes.update', ['id' => $cliente->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
                     <div class="form-group mb-4">
                         <label for="nome" class="form-label">Nome</label>
-                        <div class="input-group">
-                            <input type="text" name="nome" id="nome" class="form-control" value="{{ old('nome', $cliente->nome) }}" required>
-                        </div>
+                        <input type="text" name="nome" id="nome" class="form-control" value="{{ old('nome', $cliente->nome) }}" required>
                         @error('nome')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -32,9 +31,7 @@
 
                     <div class="form-group mb-4">
                         <label for="cpf" class="form-label">CPF</label>
-                        <div class="input-group">
-                            <input type="text" name="cpf" id="cpf" class="form-control" value="{{ old('cpf', $cliente->cpf) }}" required>
-                        </div>
+                        <input type="text" name="cpf" id="cpf" class="form-control" value="{{ old('cpf', $cliente->cpf) }}" required>
                         @error('cpf')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -42,10 +39,7 @@
 
                     <div class="form-group mb-4">
                         <label for="numero_telefone" class="form-label">Número de Telefone</label>
-                        <div class="input-group">
-                            <input type="text" name="numero_telefone" id="numero_telefone" class="form-control"
-                                value="{{ old('numero_telefone', $cliente->numero_telefone) }}" required>
-                        </div>
+                        <input type="text" name="numero_telefone" id="numero_telefone" class="form-control" value="{{ old('numero_telefone', $cliente->numero_telefone) }}" required>
                         @error('numero_telefone')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -53,9 +47,7 @@
 
                     <div class="form-group mb-4">
                         <label for="email" class="form-label">E-mail</label>
-                        <div class="input-group">
-                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $cliente->email) }}" required>
-                        </div>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $cliente->email) }}" required>
                         @error('email')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -63,11 +55,21 @@
 
                     <div class="form-group mb-4">
                         <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-                        <div class="input-group">
-                            <input type="date" name="data_nascimento" id="data_nascimento" class="form-control"
-                                value="{{ old('data_nascimento', $cliente->data_nascimento) }}" required>
-                        </div>
+                        <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" value="{{ old('data_nascimento', $cliente->data_nascimento) }}" required>
                         @error('data_nascimento')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="foto_perfil" class="form-label">Foto de Perfil</label>
+                        @if ($cliente->foto_perfil)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/imgs/' . $cliente->foto_perfil) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                            </div>
+                        @endif
+                        <input type="file" name="foto_perfil" id="foto_perfil" class="form-control">
+                        @error('foto_perfil')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>

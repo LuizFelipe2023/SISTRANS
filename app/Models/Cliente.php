@@ -9,7 +9,7 @@ class Cliente extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome', 'cpf','numero_telefone','email','data_nascimento','tipo_carteira','numero_carteira','saldo_carteira'];
+    protected $fillable = ['nome', 'cpf','numero_telefone','email','data_nascimento','tipo_carteira','numero_carteira','saldo_carteira','foto_perfil'];
 
     public function agendamentos()
     {

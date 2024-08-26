@@ -26,7 +26,7 @@ Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.st
 Route::get('/clientes/{id}', [ClienteController::class, 'show'])->name('clientes.show');
 Route::get('/clientes/{id}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
 Route::put('/clientes/{id}', [ClienteController::class, 'update'])->name('clientes.update');
-Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy')->middleware('auth');
+Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
 Route::get('/clientes/search', [ClienteController::class, 'searchClient'])->name('clientes.search');
 Route::post('/clientes/findOrCreate', [ClienteController::class, 'findOrCreateClient'])->name('clientes.findOrCreate');
 

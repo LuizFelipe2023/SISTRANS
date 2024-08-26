@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('tipo_carteira')->nullable();
             $table->string('numero_carteira')->nullable();
             $table->decimal('saldo_carteira', 10, 2)->default(0.00);
+            $table->string('foto_perfil')->nullable();
             $table->timestamps();
         });
     }

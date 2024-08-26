@@ -115,7 +115,7 @@ class AgendamentoController extends Controller
         try {
             Log::info($validated);
             Agendamento::create($validated);
-            return redirect()->route('agendamentos.index')->with('success', 'Agendamento criado com sucesso.');
+            return redirect()->route('agendamentos.searchCpf')->with('success', 'Agendamento criado com sucesso.');
         } catch (\Exception $e) {
             return back()->with('error', 'Ocorreu um erro ao criar o agendamento.')->withInput();
         }

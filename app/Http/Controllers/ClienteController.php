@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ClienteController extends Controller
@@ -13,7 +14,7 @@ class ClienteController extends Controller
     {
         try {
             $clientes = Cliente::all();
-            return view('clientes.index', ['clientes' => $clientes]);
+            return view('clientes.index', compact('clientes'));
         } catch (\Exception $e) {
             return redirect()->route('clientes.index')
                 ->with('error', 'Erro ao carregar a lista de clientes. Por favor, tente novamente.');
@@ -27,20 +28,18 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
+        $this->validateRequest($request);
+
         try {
-            $request->validate([
-                'nome' => 'required|string|max:255',
-                'cpf' => 'required|unique:clientes',
-                'numero_telefone' => 'required|string|max:15',
-                'email' => 'required|email|max:255',
-                'data_nascimento' => 'required|date',
-            ]);
+            $cpf = $this->formatCpf($request->input('cpf'));
+            $fotoPerfilPath = $this->storeProfilePhoto($request);
 
-            $cpf = preg_replace('/\D/', '', $request->input('cpf'));
+            Cliente::create($request->merge([
+                'cpf' => $cpf,
+                'foto_perfil' => $fotoPerfilPath
+            ])->all());
 
-            Cliente::create($request->merge(['cpf' => $cpf])->all());
-
-            return redirect()->route('clientes.index')
+            return redirect()->route('agendamentos.searchCpf')
                 ->with('success', 'Cliente criado com sucesso.');
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect()->back()
@@ -57,7 +56,7 @@ class ClienteController extends Controller
     {
         try {
             $cliente = Cliente::findOrFail($id);
-            return view('clientes.show', ['cliente' => $cliente]);
+            return view('clientes.show', compact('cliente'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('clientes.index')
                 ->with('error', 'Cliente não encontrado. Verifique o ID e tente novamente.');
@@ -71,7 +70,7 @@ class ClienteController extends Controller
     {
         try {
             $cliente = Cliente::findOrFail($id);
-            return view('clientes.edit', ['cliente' => $cliente]);
+            return view('clientes.edit', compact('cliente'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('clientes.index')
                 ->with('error', 'Cliente não encontrado. Verifique o ID e tente novamente.');
@@ -83,22 +82,20 @@ class ClienteController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validateRequest($request, $id);
+
         try {
-            $request->validate([
-                'nome' => 'required|string|max:255',
-                'cpf' => 'required|unique:clientes,cpf,' . $id,
-                'numero_telefone' => 'required|string|max:15',
-                'email' => 'required|email|max:255',
-                'data_nascimento' => 'required|date',
-            ]);
-
-
-            $cpf = preg_replace('/\D/', '', $request->input('cpf'));
+            $cpf = $this->formatCpf($request->input('cpf'));
 
             $cliente = Cliente::findOrFail($id);
-            $cliente->update($request->merge(['cpf' => $cpf])->all());
+            $fotoPerfilPath = $this->updateProfilePhoto($request, $cliente);
 
-            return redirect()->route('clientes.index')
+            $cliente->update($request->merge([
+                'cpf' => $cpf,
+                'foto_perfil' => $fotoPerfilPath
+            ])->all());
+
+            return redirect()->route('agendamentos.')
                 ->with('success', 'Cliente atualizado com sucesso.');
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect()->back()
@@ -118,6 +115,11 @@ class ClienteController extends Controller
     {
         try {
             $cliente = Cliente::findOrFail($id);
+
+            if ($cliente->foto_perfil && Storage::exists($cliente->foto_perfil)) {
+                Storage::delete($cliente->foto_perfil);
+            }
+
             $cliente->delete();
 
             return redirect()->route('clientes.index')
@@ -132,4 +134,44 @@ class ClienteController extends Controller
     }
 
 
+    private function validateRequest(Request $request, $id = null)
+    {
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'cpf' => 'required|unique:clientes,cpf,' . $id,
+            'numero_telefone' => 'required|string|max:15',
+            'email' => 'required|email|max:255',
+            'data_nascimento' => 'required|date',
+            'foto_perfil' => 'nullable|image|max:2048' // Limite de tamanho adicionado
+        ]);
+    }
+
+    private function formatCpf($cpf)
+    {
+        return preg_replace('/\D/', '', $cpf);
+    }
+
+    private function storeProfilePhoto(Request $request)
+    {
+        if ($request->hasFile('foto_perfil')) {
+            $file = $request->file('foto_perfil');
+            return $file->store('imgs', 'public');
+        }
+        return null;
+    }
+
+    private function updateProfilePhoto(Request $request, $cliente)
+    {
+        $fotoPerfilPath = $cliente->foto_perfil;
+
+        if ($request->hasFile('foto_perfil')) {
+            if ($fotoPerfilPath && Storage::exists($fotoPerfilPath)) {
+                Storage::delete($fotoPerfilPath);
+            }
+            $file = $request->file('foto_perfil');
+            $fotoPerfilPath = $file->store('imgs', 'public');
+        }
+
+        return $fotoPerfilPath;
+    }
 }

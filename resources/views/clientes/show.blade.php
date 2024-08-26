@@ -39,6 +39,18 @@
                     </dl>
                 </div>
             </div>
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <dt class="col-sm-4">Foto de Perfil:</dt>
+                    <dd class="col-sm-8">
+                        @if ($cliente->foto_perfil)
+                            <img src="{{ asset('storage/imgs/' . $cliente->foto_perfil) }}" alt="Foto de Perfil" class="img-fluid rounded-circle" style="max-width: 150px;">
+                        @else
+                            <p class="text-muted">Nenhuma foto disponível</p>
+                        @endif
+                    </dd>
+                </div>
+            </div>
         </div>
         <div class="card-footer bg-light">
             <div class="text-end">

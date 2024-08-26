@@ -6,7 +6,7 @@
             <div class="col-md-8 col-lg-6">
                 <div class="card shadow-lg border-light rounded">
                     <div class="card-header text-center">
-                        <h4 class="mb-0">Pesquisa de Cadastro</h4>
+                        <h4 class="mb-0">Pesquisa de Cadastro para Agendamentos</h4>
                     </div>
                     <div class="card-body">
                         @if (session('success'))
