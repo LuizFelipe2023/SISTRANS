@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 class ClienteController extends Controller
 {
@@ -34,10 +32,14 @@ class ClienteController extends Controller
             $cpf = $this->formatCpf($request->input('cpf'));
             $fotoPerfilPath = $this->storeProfilePhoto($request);
 
-            Cliente::create($request->merge([
+            Cliente::create([
+                'nome' => $request->input('nome'),
                 'cpf' => $cpf,
-                'foto_perfil' => $fotoPerfilPath
-            ])->all());
+                'numero_telefone' => $request->input('numero_telefone'),
+                'email' => $request->input('email'),
+                'data_nascimento' => $request->input('data_nascimento'),
+                'foto_perfil' => $fotoPerfilPath,
+            ]);
 
             return redirect()->route('agendamentos.searchCpf')
                 ->with('success', 'Cliente criado com sucesso.');
@@ -90,10 +92,14 @@ class ClienteController extends Controller
             $cliente = Cliente::findOrFail($id);
             $fotoPerfilPath = $this->updateProfilePhoto($request, $cliente);
 
-            $cliente->update($request->merge([
+            $cliente->update([
+                'nome' => $request->input('nome'),
                 'cpf' => $cpf,
-                'foto_perfil' => $fotoPerfilPath
-            ])->all());
+                'numero_telefone' => $request->input('numero_telefone'),
+                'email' => $request->input('email'),
+                'data_nascimento' => $request->input('data_nascimento'),
+                'foto_perfil' => $fotoPerfilPath,
+            ]);
 
             return redirect()->route('agendamentos.')
                 ->with('success', 'Cliente atualizado com sucesso.');
@@ -133,7 +139,6 @@ class ClienteController extends Controller
         }
     }
 
-
     private function validateRequest(Request $request, $id = null)
     {
         $request->validate([
@@ -142,7 +147,7 @@ class ClienteController extends Controller
             'numero_telefone' => 'required|string|max:15',
             'email' => 'required|email|max:255',
             'data_nascimento' => 'required|date',
-            'foto_perfil' => 'nullable|image|max:2048' // Limite de tamanho adicionado
+            'foto_perfil' => 'nullable|image|max:2048',
         ]);
     }
 
@@ -154,24 +159,19 @@ class ClienteController extends Controller
     private function storeProfilePhoto(Request $request)
     {
         if ($request->hasFile('foto_perfil')) {
-            $file = $request->file('foto_perfil');
-            return $file->store('imgs', 'public');
+            return $request->file('foto_perfil')->store('imgs', 'public');
         }
         return null;
     }
 
     private function updateProfilePhoto(Request $request, $cliente)
     {
-        $fotoPerfilPath = $cliente->foto_perfil;
-
         if ($request->hasFile('foto_perfil')) {
-            if ($fotoPerfilPath && Storage::exists($fotoPerfilPath)) {
-                Storage::delete($fotoPerfilPath);
+            if ($cliente->foto_perfil && Storage::exists($cliente->foto_perfil)) {
+                Storage::delete($cliente->foto_perfil);
             }
-            $file = $request->file('foto_perfil');
-            $fotoPerfilPath = $file->store('imgs', 'public');
+            return $request->file('foto_perfil')->store('imgs', 'public');
         }
-
-        return $fotoPerfilPath;
+        return $cliente->foto_perfil;
     }
 }
