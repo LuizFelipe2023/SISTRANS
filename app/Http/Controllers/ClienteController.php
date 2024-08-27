@@ -28,26 +28,31 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateRequest($request);
+        $validatedData = $request->validate([
+            'nome' => 'required|string|max:255',
+            'cpf' => 'required|string|max:14|unique:clientes,cpf',
+            'numero_telefone' => 'required|string|max:15',
+            'email' => 'required|email|max:255|unique:clientes,email',
+            'data_nascimento' => 'required|date',
+            'tipo_carteira' => 'nullable|string|max:50',
+            'numero_carteira' => 'nullable|string|max:50',
+            'saldo_carteira' => 'nullable|numeric|min:0',
+            'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
         try {
-            $cpf = $this->formatCpf($request->input('cpf'));
-            $fotoPerfilPath = $this->storeProfilePhoto($request);
+            if ($request->hasFile('foto_perfil')) {
+                $path = $request->file('foto_perfil')->store('fotos_perfil', 'public');
+                $validatedData['foto_perfil'] = $path;
+            }
 
-            Cliente::create($request->merge([
-                'cpf' => $cpf,
-                'foto_perfil' => $fotoPerfilPath
-            ])->all());
+            Cliente::create($validatedData);
 
-            return redirect()->route('agendamentos.searchCpf')
+            return redirect()->route('clientes.index')
                 ->with('success', 'Cliente criado com sucesso.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect()->back()
-                ->with('error', 'Ocorreu um problema ao criar o cliente. Verifique os dados e tente novamente.')
-                ->withInput();
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Ocorreu um erro inesperado. Por favor, tente novamente.')
+            return redirect()->route('clientes.create')
+                ->with('error', 'Erro ao criar o cliente. Por favor, tente novamente.')
                 ->withInput();
         }
     }
@@ -82,31 +87,39 @@ class ClienteController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validateRequest($request, $id);
+        $validatedData = $request->validate([
+            'nome' => 'required|string|max:255',
+            'cpf' => 'required|string|max:14|unique:clientes,cpf,' . $id,
+            'numero_telefone' => 'required|string|max:15',
+            'email' => 'required|email|max:255|unique:clientes,email,' . $id,
+            'data_nascimento' => 'required|date',
+            'tipo_carteira' => 'nullable|string|max:50',
+            'numero_carteira' => 'nullable|string|max:50',
+            'saldo_carteira' => 'nullable|numeric|min:0',
+            'foto_perfil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
         try {
-            $cpf = $this->formatCpf($request->input('cpf'));
-
             $cliente = Cliente::findOrFail($id);
-            $fotoPerfilPath = $this->updateProfilePhoto($request, $cliente);
 
-            $cliente->update($request->merge([
-                'cpf' => $cpf,
-                'foto_perfil' => $fotoPerfilPath
-            ])->all());
+            if ($request->hasFile('foto_perfil')) {
+                if ($cliente->foto_perfil && Storage::exists($cliente->foto_perfil)) {
+                    Storage::delete($cliente->foto_perfil);
+                }
+                $path = $request->file('foto_perfil')->store('fotos_perfil', 'public');
+                $validatedData['foto_perfil'] = $path;
+            }
 
-            return redirect()->route('agendamentos.')
+            $cliente->update($validatedData);
+
+            return redirect()->route('clientes.index')
                 ->with('success', 'Cliente atualizado com sucesso.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect()->back()
-                ->with('error', 'Ocorreu um problema ao atualizar o cliente. Verifique os dados e tente novamente.')
-                ->withInput();
         } catch (ModelNotFoundException $e) {
             return redirect()->route('clientes.index')
                 ->with('error', 'Cliente não encontrado. Verifique o ID e tente novamente.');
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Ocorreu um erro inesperado. Por favor, tente novamente.')
+            return redirect()->route('clientes.edit', $id)
+                ->with('error', 'Erro ao atualizar o cliente. Por favor, tente novamente.')
                 ->withInput();
         }
     }
@@ -131,47 +144,5 @@ class ClienteController extends Controller
             return redirect()->route('clientes.index')
                 ->with('error', 'Erro ao excluir o cliente. Por favor, tente novamente.');
         }
-    }
-
-
-    private function validateRequest(Request $request, $id = null)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'cpf' => 'required|unique:clientes,cpf,' . $id,
-            'numero_telefone' => 'required|string|max:15',
-            'email' => 'required|email|max:255',
-            'data_nascimento' => 'required|date',
-            'foto_perfil' => 'nullable|image|max:2048' // Limite de tamanho adicionado
-        ]);
-    }
-
-    private function formatCpf($cpf)
-    {
-        return preg_replace('/\D/', '', $cpf);
-    }
-
-    private function storeProfilePhoto(Request $request)
-    {
-        if ($request->hasFile('foto_perfil')) {
-            $file = $request->file('foto_perfil');
-            return $file->store('imgs', 'public');
-        }
-        return null;
-    }
-
-    private function updateProfilePhoto(Request $request, $cliente)
-    {
-        $fotoPerfilPath = $cliente->foto_perfil;
-
-        if ($request->hasFile('foto_perfil')) {
-            if ($fotoPerfilPath && Storage::exists($fotoPerfilPath)) {
-                Storage::delete($fotoPerfilPath);
-            }
-            $file = $request->file('foto_perfil');
-            $fotoPerfilPath = $file->store('imgs', 'public');
-        }
-
-        return $fotoPerfilPath;
     }
 }
