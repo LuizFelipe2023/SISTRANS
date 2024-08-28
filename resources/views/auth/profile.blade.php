@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                         @endif
-                        <div class="text-center">
+                        <div class="text-center mt-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#updateProfileModal">
                                 Editar Perfil
@@ -51,7 +51,7 @@
                     <h5 class="modal-title" id="updateProfileModalLabel">Atualizar Perfil</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('user.update', ['id' => $user->id]) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('auth.updateUser', ['id' => $user->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
