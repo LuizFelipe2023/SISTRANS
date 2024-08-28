@@ -51,6 +51,7 @@
                 <div class="header-nav">
                     <span><a href="{{ route('clientes.index') }}">Clientes</a></span>
                     <span><a href="{{ route('agendamentos.index2') }}">Agendamentos</a></span>
+                    <span><a href="{{ route('auth.profile') }}">Perfil</a></span>
                     <span class="logout-span" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         Sair
                     </span>

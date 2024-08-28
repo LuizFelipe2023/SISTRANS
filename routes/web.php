@@ -55,6 +55,6 @@ Route::get('/token/{email}', [AuthController::class, 'showTokenForm'])->name('au
 Route::post('/token', [AuthController::class, 'tokenProcess'])->name('auth.token.process');
 Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showResetForm'])->name('auth.reset.form');
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('auth.reset.password');
-
+Route::get('/profile',[AuthController::class,'profile'])->name('auth.profile')->middleware('auth');
 
 

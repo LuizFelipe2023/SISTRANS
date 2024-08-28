@@ -205,4 +205,10 @@ class AuthController extends Controller
             return redirect()->back()->with('error', 'Ocorreu um erro ao redefinir a senha. Por favor, tente novamente.');
         }
     }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('auth.profile', compact('user'));
+    }
 }
