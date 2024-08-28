@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\Storage;
+
 
 class AuthController extends Controller
 {
@@ -210,5 +212,48 @@ class AuthController extends Controller
     {
         $user = Auth::user();
         return view('auth.profile', compact('user'));
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        try {
+
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'password' => 'nullable|confirmed|min:6',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $user = User::findOrFail($id);
+
+
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+
+
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
+
+
+            if ($request->hasFile('photo')) {
+                if ($user->path && Storage::exists($user->path)) {
+                    Storage::delete($user->path);
+                }
+
+                $photo = $request->file('photo');
+                $path = $photo->store('pictures', 'public');
+                $user->path = $path;
+                $user->filename = $photo->getClientOriginalName();
+            }
+
+            $user->save();
+
+            return redirect()->back()->with('success', 'Usuário atualizado com sucesso!');
+        } catch (\Exception $e) {
+            Log::error('Erro ao atualizar usuário: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.');
+        }
     }
 }
