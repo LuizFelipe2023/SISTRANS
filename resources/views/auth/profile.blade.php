@@ -9,6 +9,15 @@
                         <h4 class="mb-0">Informações do Perfil</h4>
                     </div>
                     <div class="card-body">
+                    @if ($user->path)
+                            <div class="row mb-3">
+                                <label class="form-label col-md-4 font-weight-bold">Foto de Perfil:</label>
+                                <div class="col-md-8">
+                                    <img src="{{ asset('storage/' . $user->path) }}" alt="Foto de Perfil"
+                                        style="max-width: 150px; max-height: 150px;">
+                                </div>
+                            </div>
+                        @endif
                         <div class="row mb-3">
                             <label for="name" class="form-label col-md-4 font-weight-bold">Nome:</label>
                             <div class="col-md-8">
@@ -21,15 +30,6 @@
                                 <p class="form-control-plaintext">{{ $user->email }}</p>
                             </div>
                         </div>
-                        @if ($user->path)
-                            <div class="row mb-3">
-                                <label class="form-label col-md-4 font-weight-bold">Foto de Perfil:</label>
-                                <div class="col-md-8">
-                                    <img src="{{ asset('storage/' . $user->path) }}" alt="Foto de Perfil"
-                                        style="max-width: 150px; max-height: 150px;">
-                                </div>
-                            </div>
-                        @endif
                         <div class="text-center mt-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#updateProfileModal">
