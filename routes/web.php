@@ -20,28 +20,75 @@ use App\Http\Controllers\AuthController;
 
 
 
-Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index')->middleware('auth');
-Route::get('/clientes/create', [ClienteController::class, 'createCliente'])->name('clientes.create');
-Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');
-Route::get('/clientes/{id}', [ClienteController::class, 'show'])->name('clientes.show');
-Route::get('/clientes/{id}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
-Route::put('/clientes/{id}', [ClienteController::class, 'update'])->name('clientes.update');
-Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
-Route::get('/clientes/search', [ClienteController::class, 'searchClient'])->name('clientes.search');
-Route::post('/clientes/findOrCreate', [ClienteController::class, 'findOrCreateClient'])->name('clientes.findOrCreate');
+Route::get('/clientes', [ClienteController::class, 'index'])
+    ->name('clientes.index')
+    ->middleware(['auth', 'verified']);
 
+Route::get('/clientes/create', [ClienteController::class, 'createCliente'])
+    ->name('clientes.create')
+    ->middleware(['auth', 'verified']);
 
-Route::get('/agendamentos',[AgendamentoController::class,'index'])->name('agendamentos.index');
+Route::post('/clientes', [ClienteController::class, 'store'])
+    ->name('clientes.store')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/clientes/{id}', [ClienteController::class, 'show'])
+    ->name('clientes.show')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/clientes/{id}/edit', [ClienteController::class, 'edit'])
+    ->name('clientes.edit')
+    ->middleware(['auth', 'verified']);
+
+Route::put('/clientes/{id}', [ClienteController::class, 'update'])
+    ->name('clientes.update')
+    ->middleware(['auth', 'verified']);
+
+Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])
+    ->name('clientes.destroy')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/clientes/search', [ClienteController::class, 'searchClient'])
+    ->name('clientes.search')
+    ->middleware(['auth', 'verified']);
+
+Route::post('/clientes/findOrCreate', [ClienteController::class, 'findOrCreateClient'])
+    ->name('clientes.findOrCreate')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/agendamentos', [AgendamentoController::class, 'index'])
+    ->name('agendamentos.index')
+    ->middleware(['auth', 'verified']);
+
 Route::get('/agendamentos2', [AgendamentoController::class, 'index2'])
     ->name('agendamentos.index2')
-    ->middleware('auth');
-Route::get('agendamentos/search', [AgendamentoController::class, 'search'])->name('agendamentos.search');
-Route::post('agendamentos/findClient', [AgendamentoController::class, 'findClient'])->name('agendamentos.findClient');
-Route::get('/agendamentos/create/{clienteId}', [AgendamentoController::class, 'create'])->name('agendamentos.create');
-Route::post('/agendamentos/store',[AgendamentoController::class,'store'])->name('agendamentos.store');
-Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
-Route::get('/', [AgendamentoController::class, 'searchCpf'])->name('agendamentos.searchCpf');
-Route::post('/agendamentos/verificar-cpf', [AgendamentoController::class, 'verifyCpf'])->name('agendamentos.verifyCpf');
+    ->middleware(['auth', 'verified']);
+
+Route::get('agendamentos/search', [AgendamentoController::class, 'search'])
+    ->name('agendamentos.search')
+    ->middleware(['auth', 'verified']);
+
+Route::post('agendamentos/findClient', [AgendamentoController::class, 'findClient'])
+    ->name('agendamentos.findClient')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/agendamentos/create/{clienteId}', [AgendamentoController::class, 'create'])
+    ->name('agendamentos.create')
+    ->middleware(['auth', 'verified']);
+
+Route::post('/agendamentos/store', [AgendamentoController::class, 'store'])
+    ->name('agendamentos.store')
+    ->middleware(['auth', 'verified']);
+
+Route::delete('/agendamentos/{id}', [AgendamentoController::class, 'destroy'])
+    ->name('agendamentos.destroy')
+    ->middleware(['auth', 'verified']);
+
+Route::get('/', [AgendamentoController::class, 'searchCpf'])
+    ->name('agendamentos.searchCpf');
+
+Route::post('/agendamentos/verificar-cpf', [AgendamentoController::class, 'verifyCpf'])
+    ->name('agendamentos.verifyCpf');
 
 
 Route::get('/register', [AuthController::class, 'registrationForm'])->name('auth.register');
@@ -57,5 +104,9 @@ Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showReset
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('auth.reset.password');
 Route::get('/profile',[AuthController::class,'profile'])->name('auth.profile')->middleware('auth');
 Route::put('/users/{id}/update',[AuthController::class,'updateUser'])->name('auth.updateUser');
+
+Route::get('/email/verify', [AuthController::class, 'showVerifyEmailForm'])->name('auth.verifyEmailForm');
+Route::post('/email/verify', [AuthController::class, 'sendVerificationEmail'])->name('auth.sendVerificationEmail');
+Route::get('/email/verify/{token}', [AuthController::class, 'verifyEmailToken'])->name('auth.verifyEmailToken');
 
 

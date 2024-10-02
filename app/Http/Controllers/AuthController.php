@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
+use App\Mail\VerificationMail;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -255,5 +256,72 @@ class AuthController extends Controller
             Log::error('Erro ao atualizar usuário: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Ocorreu um erro ao atualizar o usuário. Por favor, tente novamente.');
         }
+    }
+
+    public function showVerifyEmailForm()
+    {
+        return view('auth.verifyEmailForm');
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            Log::warning('Tentativa de envio de verificação para e-mail não encontrado: ' . $request->email);
+            return redirect()->back()->with('error', 'Nenhuma conta foi encontrada com este e-mail.');
+        }
+
+        $token = Str::random(60);
+
+        DB::table('email_verifications')->insert([
+            'email' => $user->email,
+            'token' => $token,
+            'created_at' => now(),
+        ]);
+
+        Log::info('Token gerado para verificação de e-mail: ' . $user->email . ' | Token: ' . $token);
+
+        try {
+            Mail::to($user->email)->send(new VerificationMail($token, $user->email));
+            Log::info('E-mail de verificação enviado com sucesso para: ' . $user->email);
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar e-mail de verificação: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erro ao enviar o e-mail de verificação.');
+        }
+
+        return redirect()->route('auth.verifyEmailForm')->with('success', 'Um e-mail de verificação foi enviado.');
+    }
+
+    public function verifyEmailToken($token)
+    {
+        $verification = DB::table('email_verifications')
+            ->where('token', $token)
+            ->first();
+
+        if (!$verification) {
+            Log::warning('Tentativa de verificação com token inválido ou expirado: ' . $token);
+            return redirect()->route('auth.verifyEmailForm')->with('error', 'Token inválido ou expirado.');
+        }
+
+        $user = User::where('email', $verification->email)->first();
+
+        if ($user) {
+            $user->email_verified_at = now();
+            $user->save();
+
+            DB::table('email_verifications')->where('email', $verification->email)->delete();
+
+            Log::info('E-mail verificado com sucesso para: ' . $user->email);
+
+            return redirect()->route('auth.login')->with('success', 'E-mail verificado com sucesso! Faça login.');
+        }
+
+        Log::error('Usuário não encontrado para o e-mail: ' . $verification->email);
+        return redirect()->route('auth.verifyEmailForm')->with('error', 'Usuário não encontrado.');
     }
 }
