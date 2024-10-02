@@ -1,66 +1,94 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistrans - Funcionalidades
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. **Gerenciamento de Clientes**
+O Sistrans permite o gerenciamento completo de clientes através das seguintes funcionalidades:
 
-## About Laravel
+- **Listar Clientes**: 
+  - Exibe uma lista de todos os clientes cadastrados.
+  - Inclui tratamento de erros para falhas ao carregar a lista.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Criar Cliente**:
+  - Oferece um formulário para cadastro de novos clientes.
+  - Valida os dados inseridos, como `nome`, `cpf`, `email`, entre outros.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Armazenar Cliente**:
+  - Salva as informações do cliente no banco de dados.
+  - Permite o upload de uma foto de perfil, armazenando-a no diretório apropriado.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Visualizar Cliente**:
+  - Mostra os detalhes de um cliente específico.
+  - Inclui tratamento de exceções para clientes não encontrados.
 
-## Learning Laravel
+- **Editar Cliente**:
+  - Permite a edição dos dados de um cliente existente.
+  - Valida as informações e permite a troca da foto de perfil, caso necessário.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Atualizar Cliente**:
+  - Atualiza as informações do cliente no banco de dados.
+  - Gerencia a exclusão da foto de perfil anterior, caso uma nova seja carregada.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Excluir Cliente**:
+  - Remove um cliente do banco de dados.
+  - Exclui a foto de perfil associada ao cliente, se existir.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 2. **Gerenciamento de Agendamentos**
+O Sistrans também oferece funcionalidades para gerenciar agendamentos:
 
-## Laravel Sponsors
+- **Listar Agendamentos**:
+  - Exibe todos os agendamentos existentes.
+  - Inclui tratamento de erros para problemas ao carregar a lista.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Criar Agendamento**:
+  - Permite o cadastro de novos agendamentos.
+  - Valida os dados, como data, horário e cliente associado.
 
-### Premium Partners
+- **Visualizar Agendamento**:
+  - Mostra os detalhes de um agendamento específico.
+  - Implementa tratamento para agendamentos não encontrados.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Editar Agendamento**:
+  - Facilita a edição de um agendamento existente.
+  - Realiza validações necessárias antes de atualizar os dados.
 
-## Contributing
+- **Excluir Agendamento**:
+  - Remove um agendamento do sistema.
+  - Inclui tratamento de erros para agendamentos não encontrados.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 3. **Autenticação de Usuários**
+O Sistrans possui funcionalidades para gerenciar a autenticação de usuários:
 
-## Code of Conduct
+- **Registrar Usuário**:
+  - Permite que novos usuários se registrem no sistema.
+  - Realiza validações nos dados de entrada.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Login de Usuário**:
+  - Autentica usuários com suas credenciais.
+  - Garante o acesso ao sistema para usuários registrados.
 
-## Security Vulnerabilities
+- **Logout de Usuário**:
+  - Permite que os usuários se desconectem do sistema.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Redefinir Senha**:
+  - Facilita a recuperação de senhas esquecidas.
 
-## License
+- **Verificação de Email**:
+  - Garante que os usuários confirmem seus endereços de email após o registro.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Autenticação de Dois Fatores**:
+  - Adiciona uma camada extra de segurança, exigindo uma segunda forma de verificação ao realizar login.
+
+## 4. **Tratamento de Erros**
+- Implementação de tratamento de exceções para garantir que mensagens de erro amigáveis sejam exibidas ao usuário em caso de falhas na operação.
+
+## 5. **Validação de Dados**
+- Validação robusta dos dados inseridos pelos usuários, garantindo que campos obrigatórios sejam preenchidos e que informações como `cpf` e `email` sejam únicos no banco de dados.
+
+## 6. **Armazenamento de Arquivos**
+- Suporte para upload e gerenciamento de fotos de perfil dos clientes, garantindo que as imagens sejam armazenadas de maneira adequada e que as antigas sejam removidas quando novas forem enviadas.
+
+## 7. **Interface de Usuário**
+- Integração com o Laravel para uma interface web intuitiva, utilizando views que facilitam o cadastro, edição e visualização de clientes e agendamentos.
+
+---
+
+Essas funcionalidades proporcionam uma gestão eficiente de clientes e agendamentos dentro do sistema Sistrans, permitindo que os usuários realizem operações CRUD (Criar, Ler, Atualizar e Excluir) de forma eficaz e com feedback adequado.
