@@ -12,8 +12,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
+use App\Mail\TwoFactorAuthMail;
 use App\Mail\VerificationMail;
 use Illuminate\Support\Facades\Storage;
+
 
 
 class AuthController extends Controller
@@ -55,16 +57,54 @@ class AuthController extends Controller
         try {
             $credentials = $request->only('email', 'password');
 
+            Log::info('Tentativa de login.', ['email' => $request->input('email')]);
+
             if (Auth::attempt($credentials)) {
-                return redirect()->intended('/agendamentos2');
+                $code = rand(100000, 999999);
+                $request->session()->put('2fa_code', $code);
+
+                Mail::to($request->user()->email)->send(new TwoFactorAuthMail($code));
+                Log::info('Código de autenticação de dois fatores enviado para o e-mail.', ['email' => $request->user()->email, 'code' => $code]);
+
+                return redirect()->route('auth.two_factor_form');
             }
 
+            Log::warning('Credenciais inválidas.', ['email' => $request->input('email')]);
             return redirect()->back()->with('error', 'Credenciais inválidas. Por favor, tente novamente.');
         } catch (Exception $e) {
-            Log::error('Erro ao tentar login: ' . $e->getMessage());
+            Log::error('Erro ao tentar login: ' . $e->getMessage(), [
+                'email' => $request->input('email'),
+                'exception' => $e,
+            ]);
             return redirect()->back()->with('error', 'Ocorreu um erro ao tentar fazer login. Por favor, tente novamente.');
         }
     }
+
+    public function showTwoFactorForm()
+    {
+        Log::info('Formulário de autenticação de dois fatores exibido.');
+        return view('auth.TwoFactor');
+    }
+
+    public function verifyTwoFactorCode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|numeric',
+        ]);
+
+        Log::info('Tentativa de verificação do código 2FA.', ['code' => $request->input('code')]);
+
+        if ($request->input('code') == $request->session()->get('2fa_code')) {
+            $request->session()->forget('2fa_code');
+            Log::info('Código 2FA verificado com sucesso.');
+            return redirect()->intended('/agendamentos2');
+        }
+
+        Log::warning('Código 2FA inválido.', ['code' => $request->input('code')]);
+        return redirect()->back()->with('error', 'Código inválido. Por favor, tente novamente.');
+    }
+
+
 
     public function logout(Request $request)
     {
